@@ -1,0 +1,57 @@
+version: '3.9'
+services:
+  client-react:
+    image: client-react-compose
+    build: 
+      context: front-end/client-react/
+      dockerfile: Dockerfile
+    init: true
+    networks:
+      - my-network
+    ports:
+      - "80:8080"
+    restart: unless-stopped 
+  api-node:
+    image: api-node-compose
+    build: 
+      context: back-end/api-node/
+      dockerfile: Dockerfile
+    init: true
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgress@db:5432/postgres
+    networks:
+      - my-network
+    ports:  
+      - "3000:3000"
+    restart: unless-stopped
+  # api-golang:
+  #   image: api-golang-compose
+  #   build: 
+  #     context: back-end/api-golang/
+  #     dockerfile: Dockerfile
+  #   init: true
+  #   depends_on:
+  #     - db
+  #   environment:
+  #   - DATABASE_URL=postgres://postgres:postgress@db:5432/postgres
+  #   networks:
+  #     - my-network
+  #   ports:
+  #     - "8080:8080"
+  db:
+    image: postgres:15.1-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgress
+    networks:
+      - my-network
+    ports:
+      - "5432:5432"
+volumes:
+  pgdata:
+networks:
+  my-network:
+#   back-end-network:

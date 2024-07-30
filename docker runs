@@ -1,0 +1,10 @@
+sudo docker run -d --name db --network my-network -e POSTGRES_PASSWORD=postgress -v pgdata:/var/lib/postgresql/data -p 5432:5432 --restart unless-stopped postgres:15.1-alpine
+
+
+sudo docker run -d --name client-react --network my-network -p 80:8080 --restart unless-stopped --link=api-node --link=api-golang client-react:6
+
+
+sudo docker run -d --name api-golang --network my-network -e DATABASE_URL=postgres://postgres:postgress@db:5432/postgres -p 8080:8080 --restart unless-stopped  --link=db api-golang:6
+
+
+sudo docker run -d --name api-node --network my-network -e DATABASE_URL=postgres://postgres:postgress@db:5432/postgres -p 8080:8080 --restart unless-stopped  --link=db api-node:0
